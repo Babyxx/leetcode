@@ -1,0 +1,616 @@
+@经典  @再看 
+
+#1 两数之和
+描述：给定一个整数数组和一个值target，求两个下标i、j，使得a[i] + a[j] = target，返回下标。
+注意：要求返回下标，所以不能对原数组做改动。
+解法：利用hashmap求解，键：target-array[i];值：位置i。
+public int[] twoSum(int[] nums,int target){
+	int res[] = new int[2];
+	Map<Integer,Integer> map = new HashMap<Integer,Integer>();
+	for(int i=0;i<nums.length;i++){
+		if(map.containsKey(target-nums[i])){      //map是否含有key
+			res[0]=i;
+			res[1]=map.get(target-nums[i]);      //根据key获取value；
+			break;
+		}
+		map.put(nums[i],i);
+	} 
+	return res;
+}
+
+#2 两数相加
+描述：两个大数，用链表表示。您给做个加法。
+public ListNode addTwoNumbers(ListNode l1,ListNode l2){
+	ListNode c1 = l1;
+	ListNode c2 = l2;
+	ListNode sentinel = new ListNode(0);
+	ListNode d = sentinel;
+	int sum=0;
+	while(c1!=null || c2!=null){
+		sum /= 10;          //错写sum/=sum;
+		if(c1!=null){
+			sum+=c1.val;        // 错写c1
+			c1=c1.next;
+		}
+		if(c2!=null){
+			sum+=c2.val;
+			c2=c2.next;
+		}
+		d.next = new ListNode(sum%10);
+		d=d.next;
+	}
+	if(sum/10==1){
+		d.next=new ListNode(1);
+	}
+	return sentinel.next;
+
+#3 字母不带重样儿的最长子串
+解法： keep a hashmap which stores the characters in string as keys and their positions as values, and keep two pointers which define the max substring. move the right pointer to scan through the string , and meanwhile update the hashmap. If the character is already in the hashmap, then move the left pointer to the right of the same character last found. Note that the two pointers can only move forward.
+public int lengthOfLongestSubstring(String s){
+	if(s.length()==0) return 0;
+	HashMap<Character,Integer> map = new HashMap<Character,Integer>();
+	int max=0;
+	for(int i=0,j=0;i<s.length();++i){
+		if(map.containsKey(s.charAt(i))){
+			j = Math.max(j,map.get(s.charAt(i))+1);
+		}
+		map.put(s.charAt(i),i);
+		max = Math.max(max,i-j+1);
+	}
+	return max;
+}
+
+#4 俩有序数组的中位数 @hard
+描述：给定俩有序数组，找出把它俩合并后所得数组的中位数。要求对数时间搞定。
+
+
+
+#5 最长回文子串
+解：从这个字母开始，向两边扩展的求。note：奇数和偶数的不太一样，所以采用简单的分开处理。
+public class Solution{
+	private int lo,maxlen;
+
+	public String longestPalindrome(String s){
+		int len = s.length();
+		if(len<2)
+			return s;
+		for(int i=0;i<s.length();i++){
+			extendPalindrome(s,i,i);
+			extendPalindrome(s,i,i+1);
+		}
+		return s.substring(lo,lo+maxlen);
+	}
+
+	private void extendPalindrome(String s,int j,int k){
+		while(j>=0 && k<s.length()&&s.charAt(j)==s.charAt(k)){
+			j--;
+			k++;
+		}
+		if(maxlen<k-j-1){
+			lo=j+1;
+			maxlen=k-j-1;
+		}
+
+	}
+}
+#6 字符串Z形排列
+描述：给定字符串，按某种奇怪的方式排列一下。
+解：StringBuffer数组
+	StringBuffer[] sb = new StringBuffer[nRows];
+	for(int i=0;i<sb.length;i++){
+		sb[i] = new StringBuffer(); // 初始化
+	}
+
+#7 反转整数
+描述：给定一个10进制整数，翻转它。
+注意：数字太大的时候可能会有溢出的问题。
+	//数字太大的时候。会有问题，所以加上这个！！
+	if((newResult - tail)/10!=res){
+		return 0;
+	}
+
+
+#9 回文数
+数字分两半，然后比较。
+
+#10字符串匹配（'*','.'）
+动态规划的写法
+
+#11最多能存多少水。
+注意：宽度是他们之间的距离。哪边短，哪边动。
+
+
+#14.最长公共前缀
+
+
+#15 三数之和
+描述：给定一个数组和一个值target，找出所有三数加起来等于target的组合。
+原来的想法，固定i和j 求另一个数，解丢失
+固定i，low 和high动，存的时候有重复。
+正确的想法:固定i，剩下的两个lo=i+1；hi = length-1；
+正确答案：
+public List<List<Integer>> threeSum(int[] nums) {
+    List<List<Integer>> list2 = new ArrayList<List<Integer>>();
+    Arrays.sort(nums);
+    for(int i=0;i<nums.length-2;i++){
+    	if(num[i]>0) break;                  			//评论里面提出来的，可以加快速度，
+             /**
+             * if a<=b<=c and a+b+c=0, then a<=0
+             so the first element will always be non-positive, we can break the outer loop earlier when we found num[i] >0
+             that will save half of the time on average
+             */
+        if(i==0||(i>0&&nums[i]!=nums[i-1])){  			//优先级的问题，所以需要加上（）
+            int lo = i+1;
+            int hi = nums.length-1;
+            if(nums[lo]+nums[hi]==-nums[i]){
+                list2.add(Arrays.asList(nums[i],nums[lo],nums[hi]));       // Arrays.asList()  so cool!!
+                while(lo<hi&&nums[lo]==nums[lo+1]) {             //这样做不会添加重复的元素！
+                    lo++;
+                    //list2.add(Arrays.asList(nums[i],nums[lo],nums[hi]));
+                }
+                while(lo<hi&&nums[hi]==nums[hi-1]){
+                    hi--;
+                    //list2.add(Arrays.asList(nums[i],nums[lo],nums[hi]));
+                }
+                lo++;hi--;
+            }
+            else if(nums[lo]+nums[hi]<-nums[i]){
+                    lo++;
+            }else
+                hi--;
+        }
+    }
+    return list2;
+}
+
+#16 最接近的三数之和
+描述：给定一个数组和一个值target，找出其中仨元素，使其加起来最接近target。
+和上一题思路相同
+
+#17. Letter Combinations of a Phone Number，字符串有多少种组织形式   @再看
+思想：先进先出的原则
+public static List<String> letterCombinations(String digits){
+    LinkedList<String> ans = new LinkedList<String>();
+    if(digits.isEmpty()) return ans;
+    String[] mapping = new String[]{"","1","abc","def","ghi","jkl","mno","pqrs","tuv","wsyz"};
+    ans.add("");
+    for(int i=0;i<digits.length();i++){
+        int x =digits.charAt(i)-'0';
+        while(ans.peek().length()==i){//看看是不是还有没组合的
+            String t = ans.remove();
+            for(char s:mapping[x].toCharArray()){
+                System.out.println(t+s);
+                ans.add(t+s);
+            }
+        }
+    }
+    return ans;
+}
+
+#18.四个数之和等于给定的sum
+缩小范围的查找，提前过滤掉不满足的情况。。
+public class 四个数之和等于target {
+    public List<List<Integer>> fourSum(int[] nums, int target) {
+        ArrayList<List<Integer>> res = new ArrayList<List<Integer>>();
+        int len = nums.length;
+        if (nums == null || len < 4) {
+            return res;
+        }
+        Arrays.sort(nums);                   //排序
+        int max = nums[len - 1];              //记录最大值
+        if (4 * nums[0] > target || 4 * max < target) {
+            return res;
+        }
+        int i, z;
+        for (i = 0; i < len; i++) {
+            z = nums[i];
+            if (i > 0 && z == nums[i - 1]) {
+                continue;
+            }
+            if (z + 3 * max < target) {
+                continue;
+            }
+            if (4 * z > target) { // z太大了
+                break;
+            }
+            if (4 * z == target) {
+                if (i + 3 < len && nums[i + 3] == z) {
+                    res.add(Arrays.asList(z, z, z, z));
+                }
+                break;
+            }
+            threeSumForFourSum(nums, target - z, i + 1, len - 1, res, z);
+        }
+        return res;
+    }
+
+    public void threeSumForFourSum(int[] nums, int target, int low, int high, ArrayList<List<Integer>> fourSumlist, int z1) {
+        if (low + 1 >= high) {
+            return;
+        }
+        int max = nums[high];
+        if (3 * nums[low] > target || 3 * max < target) {
+            return;
+        }
+        int i, z;
+        for (i = low; i < high - 1; i++) {
+            z = nums[i];
+            if (i > low && z == nums[i - 1]) // avoid duplicate
+                continue;
+            if (z + 2 * max < target) // z is too small
+                continue;
+
+            if (3 * z > target) // z is too large
+                break;
+
+            if (3 * z == target) { // z is the boundary
+                if (i + 1 < high && nums[i + 2] == z)
+                    fourSumlist.add(Arrays.asList(z1, z, z, z));
+                break;
+            }
+
+            twoSumForFourSum(nums, target - z, i + 1, high, fourSumlist, z1, z);
+        }
+    }
+
+    public void twoSumForFourSum(int[] nums, int target, int low, int high, ArrayList<List<Integer>> fourSumList,int z1, int z2) {
+        if (low >= high)
+            return;
+
+        if (2 * nums[low] > target || 2 * nums[high] < target)
+            return;
+
+        int i = low, j = high, sum, x;
+        while (i < j) {
+            sum = nums[i] + nums[j];
+            if (sum == target) {
+                fourSumList.add(Arrays.asList(z1, z2, nums[i], nums[j]));
+
+                x = nums[i];
+                while (++i < j && x == nums[i]) // avoid duplicate
+                    ;                             //空语句
+                x = nums[j];
+                while (i < --j && x == nums[j]) // avoid duplicate
+                    ;
+            }
+            if (sum < target)
+                i++;
+            if (sum > target)
+                j--;
+        }
+        return;
+    }
+
+    //第二的答案
+    public List<List<Integer>> fourSum1(int[] num, int target) {
+        ArrayList<List<Integer>> ans = new ArrayList<>();
+        if (num.length < 4) return ans;
+        Arrays.sort(num);
+        for (int i = 0; i < num.length - 3; i++) {
+            if (num[i] + num[i + 1] + num[i + 2] + num[i + 3] > target)
+                break; //first candidate too large, search finished
+            if (num[i] + num[num.length - 1] + num[num.length - 2] + num[num.length - 3] < target)
+                continue; //first candidate too small
+            if (i > 0 && num[i] == num[i - 1]) continue; //prevents duplicate result in ans list
+            for (int j = i + 1; j < num.length - 2; j++) {
+                if (num[i] + num[j] + num[j + 1] + num[j + 2] > target) break; //second candidate too large
+                if (num[i] + num[j] + num[num.length - 1] + num[num.length - 2] < target)
+                    continue; //second candidate too small
+                if (j > i + 1 && num[j] == num[j - 1]) continue; //prevents duplicate results in ans list
+                int low = j + 1, high = num.length - 1;
+                while (low < high) {
+                    int sum = num[i] + num[j] + num[low] + num[high];
+                    if (sum == target) {
+                        ans.add(Arrays.asList(num[i], num[j], num[low], num[high]));
+                        while (low < high && num[low] == num[low + 1]) low++; //skipping over duplicate on low
+                        while (low < high && num[high] == num[high - 1]) high--; //skipping over duplicate on high
+                        low++;
+                        high--;
+                    }
+                    //move window
+                    else if (sum < target) low++;
+                    else high--;
+                }
+            }
+        }
+        return ans;
+    }
+}
+
+#19 删除链表倒数第N个节点
+需要定位到N的前一个（正向），即倒数n+1个节点的位置。
+快慢指针，距离相差n。
+
+#20.检查括号多是否有效
+简洁写法：
+    public static boolean isValid(String s) {
+        Stack<Character> stack = new Stack<Character>();
+        for(char c:s.toCharArray()){
+            if(c=='('){                      //字符判断相等
+                stack.push(')');
+            }else if(c=='['){
+                stack.push(']');
+            }else if(c=='{'){
+                stack.push('}');
+            }else{
+                if(stack.isEmpty()||stack.pop()!=c){  //没有相匹配的了
+                    return false;
+                }
+            }
+        }
+        return stack.isEmpty();
+
+
+#21合并两个排序的链表
+递归的思想！！1记住啊
+避免new 新节点，从操作系统的角度理解！！！
+
+#22.生成括号           @经典
+描述：给定一个长度，生成所有此长度的合法括号序列。
+Catalan数：
+    定义令h(1)=1，Catalan数满足递归式：h(n) = h(1)*h(n-1) + h(2)*h(n-2) + ... + h(n-1)h(1)，n>=2该递推关系的解为：h(n) = C(2n-2,n-1)/n，n=1,2,3,...（其中C(2n-2,n-1)表示2n-2个中取n-1个的组合数）
+类似的问题：(将多边行划分为三角形问题,出栈次序问题,排身高问题)
+    https://blog.csdn.net/hackbuteer1/article/details/7450250
+    有2n个人排成一行进入公园。入场费1元。其中只有n个人有一张1元钞票，另外n人只有2元钞票，剧院无其它钞票，问有多少中方法使得只要有2元的人买票，售票处就有1元的钞票找零？(将持1元者到达视作将1元入栈，持2元者到达视作使栈中某1元出栈)
+
+
+#23 归并k个有序链表
+
+描述：如题。使用优先队列
+
+#24 交换节点对       @递归
+描述：给定一个链表，每两个节点做一下交换。
+
+#25 每k个节点反转一下
+描述：给定一个链表，每k个节点一组，做一次反转。
+public ListNode reverseKGroup(ListNode head, int k) {
+    ListNode curr = head;
+    int count = 0;
+    while (curr != null && count != k) { // find the k+1 node
+        curr = curr.next;
+        count++;
+    }
+    if (count == k) { // if k+1 node is found
+        curr = reverseKGroup(curr, k); // reverse list with k+1 node as head
+        // head - head-pointer to direct part, 
+        // curr - head-pointer to reversed part;
+        while (count-- > 0) { // reverse current k-group: 
+            ListNode tmp = head.next; // tmp - next head in direct part
+            head.next = curr; // preappending "direct" head to the reversed list 
+            curr = head; // move head of reversed part to a new node
+            head = tmp; // move "direct" head to the next node in direct part
+        }
+        head = curr;
+    }
+    return head;
+}
+
+ #26 去除有序数组的重复元素
+
+ #27 去除数组中指定的数据，要求额外使用的内存为o(1)     
+ 数组中删除数据的方法：覆盖掉重复的值
+ public int removeElement(int[] nums, int val) {
+    int begin=0;
+    for(int i=0;i<nums.length;i++){
+        if(nums[i]!=val){
+            nums[begin++]=nums[i];
+        }
+    }
+    return begin;
+}
+
+#28 实现strStr()
+
+描述：字符串匹配，经典问题。
+public static int strStr(String haystack, String needle) {
+    int lenh = haystack.length();
+    int lenn = needle.length();
+    if(lenh<lenn){
+        return -1;
+    }else if(lenn==0)
+        return 0;
+    boolean flag = false;
+    int i=0,count =0,index=0;
+    while (i<lenh-lenn+1){
+        if(haystack.charAt(i)!=needle.charAt(count))
+            i++;
+        else{
+            String s = haystack.substring(i,i+lenn);
+            if(s.equals(needle)) {
+                flag=true;
+                break;}
+            else i++;
+        }
+    }
+    return flag==true?i:-1;
+}
+
+百度：Rabin-Karp字符串查找算法
+
+#29 两整数相除——不能使用除法。
+思想：
+    int--long防止溢出
+    判定符号
+    处理边界值：
+        除数为0
+        被除数为0或者被除数<除数
+    利用加法来做。@重要
+   public static int divide(int dividend, int divisor) {
+        //Reduce the problem to positive long integer to make it easier.
+        int sign = 1;
+        if((dividend>0 && divisor<0)||(dividend<0 &&divisor>0))
+            sign=-1;
+        long ldividend = Math.abs((long)dividend);
+        long ldivisor = Math.abs((long)divisor);
+
+        //Take care the edge cases.
+        if(ldivisor==0) return Integer.MAX_VALUE;
+        if((ldividend==0)||(ldividend<ldivisor)) return 0;
+
+        long lans = ldivide(ldividend,ldivisor);
+
+        int ans;
+        if(lans>Integer.MAX_VALUE){ //Handle overflow.
+            ans = (sign==1)?Integer.MAX_VALUE:Integer.MIN_VALUE;
+        }else{
+            ans = (int)(sign*lans);
+        }
+        return ans;
+    }
+    private static long ldivide(long ldividend,long ldivisor){
+        // Recursion exit condition
+        if(ldividend<ldivisor) return 0;
+        //  Find the largest multiple so that (divisor * multiple <= dividend),
+        //  whereas we are moving with stride 1, 2, 4, 8, 16...2^n for performance reason.
+        //  Think this as a binary search.
+        long sum = ldivisor;
+        long multiple=1;
+        while((sum+sum)<=ldividend){
+            sum+=sum;
+            multiple+=multiple;
+        }
+        //Look for additional value for the multiple from the reminder (dividend - sum) recursively.
+        return multiple + ldivide(ldividend-sum,ldivisor);
+
+    }
+
+
+#30 由所有单词连成的子串
+
+描述：给定一个无重复单词的字典D，和一个长字符串S。找出S中的子串，该子串恰好是D中所有单词连接而成
+
+############################################
+##时间2018/6/5，第二轮
+############################################
+
+#31.下一个排列，把一个数字串，变成下一个最大数，如果没有就变成最小数。
+例如：
+    1,2,3 → 1,3,2
+    3,2,1 → 1,2,3
+    1,1,5 → 1,5,1
+使用while循环的时候记得更新变量。
+public class Main{
+    public static void  nextPermutation(int[] nums) {      
+        int index = nums.length-1;
+        while(index>0){
+            if(nums[index]>nums[index-1])
+                break;
+            index--;                 //  注意更新变量
+        }
+        if(index!=0)
+            swap(nums,index-1);
+        reverse(nums,index);
+    }
+    private static void swap(int[] nums,int index){   //  第二部分
+        int j = nums.length-1;
+        while(j>index){
+            if(nums[j--]>nums[index]){
+                int tmp = nums[index];
+                nums[index] = nums[++j];
+                nums[j] = tmp;
+                break;
+            }
+        }
+    }时
+    private static void reverse(int nums[],int index){  // 第三部分
+        int i = index,j = nums.length-1;
+        while(i<j){
+            int tmp = nums[i];
+            nums[i++] = nums[j];
+            nums[j--] = tmp;
+        }
+
+    }
+}
+
+#32 最长合法括号子串
+
+描述：给定一个括号序列，找出最长的合法括号子串。
+// 利用stack，记录的是下标所在的位置
+// 从左到右扫描序列:
+//     如果遇到的是"(",入栈，
+//     如果是")",判断栈顶位置的:
+//         如果是"(",找到一对匹配的，出栈
+//         如果不是，则当前元素入栈。
+// 3.After the scan is done, the stack will only
+// contain the indices of characters which cannot be matched. Then
+// let's use the opposite side - substring between adjacent indices
+// should be valid parentheses.
+// 4.If the stack is empty, the whole input
+// string is valid. Otherwise, we can scan the stack to get longest
+// valid substring as described in step 3.
+
+
+#33 旋转过有序数组的查找问题
+// 描述：一个有序数组，可能进行了循环移位，在里面进行查找。
+
+不需要查找到最小值的写法：
+    http://www.cnblogs.com/grandyang/p/4325648.html
+
+#34 找区间。
+//描述：给定一个有序数组，找出某个值的起始和终止区间。
+二分法稍微改变一下，先找最小值的位置，然后再找最大值的位置。@重要
+
+
+#35 寻找插入位置
+
+描述：给定有序数组和一个值，寻找合适的插入位置。  @重要！！
+    public int searchInsert(int[] nums, int target) {
+        int lo = 0;
+        int high = nums.length-1;    // high的值不是无限大，【数组长度不是无限大】
+        while(lo<=high){
+            int mid = (lo+high)/2;
+            if(nums[mid]<target)
+                lo=mid+1;
+            else high = mid-1;
+        }
+        return lo;       //      这里直接返回lo
+    }
+
+#39 组合之和
+// 描述：给定一个集合以及一个值target，找出所有加起来等于target的组合，要不带重样儿的。每个元素可以用无数次。
+
+一类问题:        @重要
+    1-1.Subsets[给定的集合中没有重复的元素，求子集]
+    //Given a set of distinct integers, nums, return all possible subsets (the power set).
+
+    1-2.Subsets II [给定的集合中有重复的元素 求子集]
+    //Given a collection of integers that might contain duplicates, nums, return all possible subsets (the power set).
+
+    2-1.Permutations 排列
+    //Given a collection of distinct integers, return all possible permutations.
+
+    2-2.Permutations II  排列2 有重复数据
+    //Given a collection of numbers that might contain duplicates, return all possible unique permutations.
+
+    3-1:Combination Sum  numbers可以使用好几次
+
+    3-2:Combination Sum II numbers只能使用一次
+
+    4:Palindrome Partitioning 回文分割
+
+#41 第一个未出现的正数     
+//
+描述：给定无序数组，找出第一个未出现的正整数。
+
+#45 青蛙跳2  @考过
+//描述：和Jump Game一样，这次计算最小步数。
+BFS的思想。 where nodes in level i are all the nodes that can be reached in i-1th jump.
+public int jump(int[] nums) {
+    if(nums.length<2) return 0;
+    
+    int i = 0,curmax = 0;
+    int level = 0;
+    
+    while(i<=curmax){  //当前能到达的最大值
+        int next_max = curmax;	//下一个到达的最大值
+        level++;			
+        for(;i<=curmax;i++){
+            next_max = Math.max(next_max,i+nums[i]);
+            if(next_max>=nums.length-1)
+                return level;
+        }
+        curmax = next_max;
+    }
+    return 0;
+}
